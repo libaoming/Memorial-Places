@@ -22,15 +22,21 @@ class PlacesTableViewController: UITableViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
+        
+        if let  placesTemp  =  UserDefaults.standard.object(forKey: "places")  as? [Dictionary<String,String>] {
+            places = placesTemp
+        }
+        
         if places.count == 1 && places[0].count == 0 {
             
             places.remove(at: 0)
-            places.append(["name":"Taj Mahal","lat":"27.1","lon":"78.04"])
+            places.append(["name":"Taj Mahal","lat":"39.9385466","lon":"116.1172745"])
             
-            
+            UserDefaults.standard.set(places, forKey: "places")
         }
         
         activePlaces = -1
+        
         
         table.reloadData()
     }
@@ -49,11 +55,27 @@ class PlacesTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: "cell")
 
+        
+        
         if let name = places[indexPath.row]["name"] {
             cell.textLabel?.text = name
 
         }
         return cell
+    }
+    
+    
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == UITableViewCellEditingStyle.delete {
+            places.remove(at: indexPath.row)
+            UserDefaults.standard.set(places, forKey: "places")
+            self.table.reloadData()
+            
+        }
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
